@@ -25,7 +25,7 @@ class EcommerceStoreApiView(APIView):
             print(f"Error listing ecommerce store: {e}")
             status_response = status.HTTP_400_BAD_REQUEST
             response = {
-                'succes': True,
+                'succes': False,
                 'message': f"Error listing ecommerce store: {e}",
                 'data': ecommerce_serializer.data
             }
@@ -73,8 +73,8 @@ class EcommerceStoreDetailApiView(APIView):
     def get(self, request, pk=None, format=None):
         status_response = None
         try:
-            ecommerces = EcommerceStore.objects.get(pk=pk)
-            ecommerce_serializer = EcommerceStoreSerializer(ecommerces)
+            ecommerce = EcommerceStore.objects.get(pk=pk)
+            ecommerce_serializer = EcommerceStoreSerializer(ecommerce)
             status_response = status.HTTP_200_OK
             response = {
                 'succes': True,
@@ -85,7 +85,7 @@ class EcommerceStoreDetailApiView(APIView):
             print(f"Error listing ecommerce store: {e}")
             status_response = status.HTTP_400_BAD_REQUEST
             response = {
-                'succes': True,
+                'succes': False,
                 'message': f"Error listing ecommerce store: {e}",
                 'data': None
             }
@@ -105,7 +105,11 @@ class EcommerceStoreDetailApiView(APIView):
                 raise Exception(f'required params {", ".join(BODY_PARAMS)}')
 
             ecommerce = EcommerceStore.objects.get(pk=pk)
-            user = EcommerceUser.objects.get(pk=int(data.get('user_id', None)))
+            user = EcommerceUser.objects.get(
+                pk=int(
+                    data.get('user_id', None)
+                    )
+                )
             ecommerce.ecommerce_user = user
             ecommerce.name = data.get('name')
             ecommerce.address = data.get('address')
@@ -120,7 +124,7 @@ class EcommerceStoreDetailApiView(APIView):
             print(f"Error listing ecommerce store: {e}")
             status_response = status.HTTP_400_BAD_REQUEST
             response = {
-                'succes': True,
+                'succes': False,
                 'message': f"Error update ecommerce store: {e}",
                 'data': None
             }
@@ -146,7 +150,6 @@ class EcommerceStoreDetailApiView(APIView):
             response = {
                 'succes': False,
                 'message': f"Error deleting ecommerce store: {e}",
-                'data': None
             }
     
         return Response(
