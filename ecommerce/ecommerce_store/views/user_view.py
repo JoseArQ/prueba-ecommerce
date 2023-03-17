@@ -146,3 +146,26 @@ class EcommerceUserDetailAPIView(APIView):
             data=response,
             status=status_reponse
         )
+
+    def delete(self, request, pk=None):
+        status_reponse = None
+        try:
+            user = EcommerceUser.objects.get(pk=pk)
+            user = user.delete()
+            
+            response = {
+                'succes': True,
+                'message': "user delete successfully",
+            }
+            status_reponse = status.HTTP_200_OK
+        except Exception as e:
+            response = {
+                'succes': False,
+                'message': f"Error deleting user: {e}",
+            }
+            status_reponse = status.HTTP_400_BAD_REQUEST
+        
+        return Response(
+            data=response,
+            status=status_reponse
+        )
