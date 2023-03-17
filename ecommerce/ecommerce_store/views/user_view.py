@@ -5,13 +5,7 @@ from rest_framework.views import APIView
 
 from ecommerce_store.models import EcommerceUser
 from ecommerce_store.serializers.user_serializer import EcommerceUserSerializer
-
-def is_valid_body(expected_body : list, body : dict)->bool:
-    for param in expected_body:
-        if not param in body.keys():
-            return False
-    
-    return True
+from ecommerce_store.utils.utils import is_valid_body
 
 BODY_PARAMS = ['username', 'email']
 class EcommerceUserAPIView(APIView):

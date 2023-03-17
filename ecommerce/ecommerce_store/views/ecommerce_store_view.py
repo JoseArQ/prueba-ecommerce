@@ -4,15 +4,9 @@ from rest_framework.response import Response
 
 from ecommerce_store.models import EcommerceStore, EcommerceUser
 from ecommerce_store.serializers.ecommerce_store_serializer import EcommerceStoreSerializer
+from ecommerce_store.utils.utils import is_valid_body
 
 BODY_PARAMS = ['user_id', 'name', 'address']
-
-def is_valid_body(expected_body : list, body : dict)->bool:
-    for param in expected_body:
-        if not param in body.keys():
-            return False
-    
-    return True
 
 class EcommerceStoreApiView(APIView):
     
