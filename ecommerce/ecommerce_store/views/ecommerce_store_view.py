@@ -100,3 +100,38 @@ class EcommerceStoreDetailApiView(APIView):
             data=response,
             status=status_response
         )
+    
+    def patch(self, request, pk=None, format=None):
+        status_response = None
+        data = request.data
+        
+        try:
+            is_valid = is_valid_body(expected_body=BODY_PARAMS, body=data)
+            if not is_valid:
+                raise Exception(f'required params {", ".join(BODY_PARAMS)}')
+
+            ecommerce = EcommerceStore.objects.get(pk=pk)
+            user = EcommerceUser.objects.get(pk=int(data.get('user_id', None)))
+            ecommerce.ecommerce_user = user
+            ecommerce.name = data.get('name')
+            ecommerce.address = data.get('address')
+            ecommerce_serializer = EcommerceStoreSerializer(ecommerce)
+            status_response = status.HTTP_200_OK
+            response = {
+                'succes': True,
+                'message': f"ecommerce update successfully",
+                'data': ecommerce_serializer.data
+            }
+        except Exception as e:
+            print(f"Error listing ecommerce store: {e}")
+            status_response = status.HTTP_400_BAD_REQUEST
+            response = {
+                'succes': True,
+                'message': f"Error update ecommerce store: {e}",
+                'data': None
+            }
+    
+        return Response(
+            data=response,
+            status=status_response
+        )
