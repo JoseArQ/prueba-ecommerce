@@ -2,8 +2,17 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from ecommerce_store.models import EcommerceStore
+from ecommerce_store.models import EcommerceStore, EcommerceUser
 from ecommerce_store.serializers.ecommerce_store_serializer import EcommerceStoreSerializer
+
+BODY_PARAMS = ['user_id', 'name', 'address']
+
+def is_valid_body(expected_body : list, body : dict)->bool:
+    for param in expected_body:
+        if not param in body.keys():
+            return False
+    
+    return True
 
 class EcommerceStoreApiView(APIView):
     
@@ -27,6 +36,39 @@ class EcommerceStoreApiView(APIView):
                 'data': ecommerce_serializer.data
             }
     
+        return Response(
+            data=response,
+            status=status_response
+        )
+    
+    def post(self, request, format=None):
+        data = request.data
+        try:
+            is_valid = is_valid_body(expected_body=BODY_PARAMS, body=data)
+            if not is_valid:
+                raise Exception(f'required params {", ".join(BODY_PARAMS)}')
+            print('valid request')
+            user = EcommerceUser.objects.get(pk=int(data.get('user_id', None)))
+            ecommerce = EcommerceStore.objects.create(
+                ecommerce_user=user,
+                name=data['name'],
+                address=data['address']
+            )
+            ecommerce_serializer = EcommerceStoreSerializer(ecommerce)
+            response = {
+                "succes": True,
+                "message": "ecommerce store create successfully",
+                "data": ecommerce_serializer.data
+            }
+            status_response = status.HTTP_201_CREATED
+        except Exception as e:
+            response = {
+                "succes": False,
+                "message": f"Error creating ecommerce store: {e}",
+                "data": None
+            }
+            status_response = status.HTTP_404_NOT_FOUND
+
         return Response(
             data=response,
             status=status_response
