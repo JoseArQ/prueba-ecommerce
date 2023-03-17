@@ -29,13 +29,15 @@ class EcommerceUserAPIView(APIView):
             user_serializer = EcommerceUserSerializer(users, many=True)
             response = {
                 'succes': True,
+                'message': "user created successfully",
                 'data': user_serializer.data
             }
             status_reponse = status.HTTP_200_OK
         except Exception as e:
             response = {
                 'succes': False,
-                'message': f'Error listing users: {e}'
+                'message': f'Error listing users: {e}',
+                'data': None
             }
             status_reponse = status.HTTP_400_BAD_REQUEST
         
@@ -90,12 +92,11 @@ class EcommerceUserDetailAPIView(APIView):
         """
         status_reponse = None
         try:
-            # user = get_object_or_404(self.users, pk)
             user = EcommerceUser.objects.get(pk=pk)
-            print(f'get specific user: {user}')
             user_serializer = EcommerceUserSerializer(user)
             response = {
                 'succes': True,
+                'message': "user found successfully",
                 'data': user_serializer.data
             }
             status_reponse = status.HTTP_200_OK
@@ -103,7 +104,8 @@ class EcommerceUserDetailAPIView(APIView):
             print(f"Error not found user: {e}")
             response = {
                 'succes': False,
-                'message': f"Error not found user: {e}"
+                'message': f"Error not found user: {e}",
+                'data': None
             }
             status_reponse = status.HTTP_400_BAD_REQUEST
 
