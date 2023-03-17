@@ -6,11 +6,17 @@ from rest_framework.views import APIView
 from ecommerce_store.models import EcommerceUser
 from ecommerce_store.serializers.user_serializer import EcommerceUserSerializer
 
+def is_valid_body(expected_body : list, body : dict)->bool:
+    for param in expected_body:
+        if not param in body.keys():
+            return False
+    
+    return True
 class EcommerceUserAPIView(APIView):
     """
     ApiView for CRUD operations for EcommerceUser model 
     """
-
+    BODY_PARAMS = ['username', 'email']
     def get(self, request, format=None):
         """
         Method for response user get http request.
@@ -38,6 +44,37 @@ class EcommerceUserAPIView(APIView):
             status_reponse = status.HTTP_400_BAD_REQUEST
         
         
+        return Response(
+            data=response,
+            status=status_response
+        )
+    
+    def post(self, request, format=None):
+        data = request.data
+        
+        try:
+            is_valid = is_valid_body(expected_body=BODY_PARAMS, body=data)
+            if not is_valid:
+                raise Exception(f'required params {", ".join(BODY_PARAMS)}')
+            print('valid request')
+            # TODO: validate email field
+            
+            user = EcommerceUser.objects.create(**data)
+            user_serializer = EcommerceUserSerializer(user)
+            response = {
+                "succes": True,
+                "message": "user create successfully",
+                "data": user_serializer.data
+            }
+            status_response = status.HTTP_201_CREATED
+        except Exception as e:
+            response = {
+                "succes": False,
+                "message": f"Error creating user: {e}",
+                "data": None
+            }
+            status_response = status.HTTP_201_CREATED
+
         return Response(
             data=response,
             status=status_response

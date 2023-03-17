@@ -13,6 +13,13 @@ class EcommerceStoreListingField(serializers.RelatedField):
     
 class EcommerceUserSerializer(serializers.ModelSerializer):
     
+    # def validate_email(self, value):
+    #     print("tipo: ",type(value))
+    #     if not value:
+    #         raise serializers.ValidationError("username value not found")
+    
+    # def validate(self, attrs):
+    #     return attrs
     class Meta:
         model = EcommerceUser
         fields = ('id', 'username', 'email')
