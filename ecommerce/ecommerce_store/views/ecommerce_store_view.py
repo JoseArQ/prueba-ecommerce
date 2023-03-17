@@ -135,3 +135,27 @@ class EcommerceStoreDetailApiView(APIView):
             data=response,
             status=status_response
         )
+
+    def delete(self, request, pk=None, format=None):
+        status_response = None
+        try:
+            ecommerce = EcommerceStore.objects.get(pk=pk)
+            ecommerce.delete()
+            status_response = status.HTTP_200_OK
+            response = {
+                'succes': True,
+                'message': f"ecommerce delete succesfully",
+            }
+        except Exception as e:
+            print(f"Error listing ecommerce store: {e}")
+            status_response = status.HTTP_400_BAD_REQUEST
+            response = {
+                'succes': False,
+                'message': f"Error deleting ecommerce store: {e}",
+                'data': None
+            }
+    
+        return Response(
+            data=response,
+            status=status_response
+        )
