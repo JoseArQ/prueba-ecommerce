@@ -12,11 +12,13 @@ def is_valid_body(expected_body : list, body : dict)->bool:
             return False
     
     return True
+
+BODY_PARAMS = ['username', 'email']
 class EcommerceUserAPIView(APIView):
     """
     ApiView for CRUD operations for EcommerceUser model 
     """
-    BODY_PARAMS = ['username', 'email']
+   
     def get(self, request, format=None):
         """
         Method for response user get http request.
@@ -58,7 +60,7 @@ class EcommerceUserAPIView(APIView):
                 raise Exception(f'required params {", ".join(BODY_PARAMS)}')
             print('valid request')
             # TODO: validate email field
-            
+
             user = EcommerceUser.objects.create(**data)
             user_serializer = EcommerceUserSerializer(user)
             response = {
@@ -111,6 +113,35 @@ class EcommerceUserDetailAPIView(APIView):
             }
             status_reponse = status.HTTP_400_BAD_REQUEST
 
+        return Response(
+            data=response,
+            status=status_reponse
+        )
+
+    def patch(self, request, pk=None):
+        status_reponse = None
+        try:
+            data = request.data
+            is_valid = is_valid_body(expected_body=BODY_PARAMS, body=data)
+            user = EcommerceUser.objects.get(pk=pk)
+            user.username = data.get('username')
+            user.email = data.get('email')
+            user.save()
+            user_serializer = EcommerceUserSerializer(user)
+            response = {
+                'succes': True,
+                'message': "user update successfully",
+                'data': user_serializer.data
+            }
+            status_reponse = status.HTTP_200_OK
+        except Exception as e:
+            response = {
+                'succes': False,
+                'message': f"Error updating user: {e}",
+                'data': None
+            }
+            status_reponse = status.HTTP_400_BAD_REQUEST
+        
         return Response(
             data=response,
             status=status_reponse
